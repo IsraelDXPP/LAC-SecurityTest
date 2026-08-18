@@ -6,18 +6,37 @@
 
 ## Overview
 
-Frida-based security testing framework for Los Angeles Crimes 1.9.6. Identifies and catalogs vulnerabilities for patching in future game updates.
+Security testing framework for Los Angeles Crimes 1.9.6. Includes both:
+1. **APK Mod Menu** - Modified APK with integrated mod menu (no root required)
+2. **Frida Agent** - Runtime hooking framework (requires root)
 
 ## Features
 
 - 33 documented vulnerabilities (5 Critical, 9 High, 9 Medium, 10 Low)
 - 5 hack modules: Player, Vehicle, Network, Editor, Game State
+- **APK Mod Menu** - Install and play with mod menu built-in
+- **Frida Agent** - Advanced runtime hooking
 - Floating menu overlay with tabbed interface
 - Anti-detection bypass system
 - CLI for automation and scripting
 - GitHub Actions CI/CD pipeline
 
-## Quick Start
+## Quick Start - APK Mod Menu (Recommended)
+
+```bash
+# Clone repository
+git clone https://github.com/IsraelDXPP/LAC-SecurityTest.git
+cd LAC-SecurityTest
+
+# Build modded APK
+cd apk-builder
+build-apk.bat
+
+# Install on device
+adb install output\LAC_ModMenu_Signed.apk
+```
+
+## Quick Start - Frida Agent (Requires Root)
 
 ```bash
 # Clone repository
@@ -30,12 +49,19 @@ npm install
 # Build project
 npm run build
 
-# Inject agent (requires ADB + rooted device/emulator)
+# Inject agent
 npm run inject
 ```
 
 ## Prerequisites
 
+### For APK Mod Menu
+- Java JDK 17+
+- apktool (https://ibotpeaches.github.io/Apktool/)
+- Android SDK Build Tools
+- Original APK (already extracted)
+
+### For Frida Agent
 - Node.js 18+
 - Android device/emulator with root access
 - ADB (Android Debug Bridge)
@@ -86,6 +112,10 @@ LAC-SecurityTest/
 │   ├── modules/              # Hack modules
 │   ├── menu/                 # Floating UI
 │   └── utils/                # Utilities
+├── apk-builder/              # APK mod menu build system
+│   ├── smali/                # Smali code for mod menu
+│   ├── build-apk.bat         # Build script
+│   └── README.md             # APK builder docs
 ├── cli/                      # Command line interface
 ├── data/                     # Configuration data
 ├── scripts/                  # Automation scripts
