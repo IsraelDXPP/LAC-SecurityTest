@@ -1,0 +1,220 @@
+{
+  "assembly": "Assembly-CSharp.dll",
+  "unityVersion": "2022.x",
+  "il2cppVersion": 31,
+  "metadataVersion": 31,
+  "classes": {
+    "PlayerControl": {
+      "typedefIndex": 1632,
+      "baseClass": "Mirror.NetworkBehaviour",
+      "fields": {
+        "team": { "offset": "0x70", "type": "string", "syncVar": true },
+        "_playerID": { "offset": "0x78", "type": "string" },
+        "password": { "offset": "0x80", "type": "string" },
+        "approved": { "offset": "0x88", "type": "bool" },
+        "inventory": { "offset": "0x90", "type": "string" },
+        "role": { "offset": "0x98", "type": "string" },
+        "status": { "offset": "0xA0", "type": "string" },
+        "recivedCoin": { "offset": "0xB0", "type": "string" },
+        "recivedDice": { "offset": "0xB8", "type": "int" },
+        "killCount": { "offset": "0x344", "type": "int" },
+        "playerSpeed": { "offset": "0x164", "type": "float" },
+        "playerHeight": { "offset": "0x168", "type": "float" },
+        "controlable": { "offset": "0xD8", "type": "bool" },
+        "isInVehicle": { "offset": "0x378", "type": "bool" }
+      },
+      "methods": {
+        "CmdShootPos": { "rva": "0xF2B660", "attribute": "Command" },
+        "CmdAskExplosion": { "rva": "0xF2B7C8", "attribute": "Command" },
+        "CmdRespawn": { "rva": "0xF203F4", "attribute": "Command" },
+        "CmdUpdateHealth": { "rva": "0xF2A624", "attribute": "Command" },
+        "CmdUpdateID": { "rva": "0xF1D9D8", "attribute": "Command" },
+        "CmdUpdatePassword": { "rva": "0xF2A78C", "attribute": "Command" },
+        "CmdUpdateInventory": { "rva": "0xF2A8F4", "attribute": "Command" },
+        "CmdUpdateRole": { "rva": "0xF2A6D8", "attribute": "Command" },
+        "CmdUpdateStatus": { "rva": "0xF2A624", "attribute": "Command" },
+        "CmdUpdateKill": { "rva": "0xF2D76C", "attribute": "Command" },
+        "CmdAddScore": { "rva": "0xF2D604", "attribute": "Command" },
+        "CmdSyncServerOptions": { "rva": "0xF2D6B8", "attribute": "Command" },
+        "CmdSyncEditorObj": { "rva": "0xF2F11C", "attribute": "Command" },
+        "CmdSyncRagdoll": { "rva": "0xF28C78", "attribute": "Command" },
+        "CmdSetGlobalVariable": { "rva": "0xF2FA50", "attribute": "Command" },
+        "CmdUpdateMask": { "rva": "0xF1DAA0", "attribute": "Command" },
+        "CmdSwitchWeapon": { "rva": "0xF2B4F8", "attribute": "Command" },
+        "CmdReloading": { "rva": "0xF2B3C0", "attribute": "Command" },
+        "CmdEmote": { "rva": "0xF2A418", "attribute": "Command" },
+        "CmdRun": { "rva": "0xF28320", "attribute": "Command" },
+        "CmdCrouch": { "rva": "0xF2826C", "attribute": "Command" },
+        "CmdJump": { "rva": "0xF27E6C", "attribute": "Command" },
+        "CmdTeam": { "rva": "0xF2D3CC", "attribute": "Command" }
+      }
+    },
+    "PlayerHealth": {
+      "typedefIndex": 1648,
+      "baseClass": "Mirror.NetworkBehaviour",
+      "fields": {
+        "health": { "offset": "0x70", "type": "int" },
+        "localDead": { "offset": "0x74", "type": "bool" },
+        "dead": { "offset": "0x75", "type": "bool" },
+        "hitInvincible": { "offset": "0xEE", "type": "bool" }
+      },
+      "methods": {
+        "CmdUpdateHealth": { "rva": "0x1082DFC", "attribute": "Command" },
+        "RpcUpdateHealth": { "rva": "0x107EF8C", "attribute": "ClientRpc" },
+        "CmdTakeDamage": { "rva": "0x1083054", "attribute": "Command(requiresAuthority=False)" },
+        "RpcTakeDamage": { "rva": "0x107F054", "attribute": "ClientRpc" }
+      }
+    },
+    "PlayerWeapon": {
+      "typedefIndex": 1671,
+      "baseClass": "UnityEngine.MonoBehaviour",
+      "fields": {
+        "weapon": { "offset": "0x6C", "type": "int" },
+        "ammo": { "offset": "0x88", "type": "int[]" },
+        "clips": { "offset": "0x90", "type": "int[]" },
+        "damage": { "offset": "0x98", "type": "int[]" },
+        "isShooting": { "offset": "0x38", "type": "bool" },
+        "reloading": { "offset": "0x3B", "type": "bool" }
+      },
+      "methods": {
+        "PistolShoot": { "rva": "0x108AF7C" },
+        "RifleShoot": { "rva": "0x108B05C" },
+        "SniperShoot": { "rva": "0x108B10C" },
+        "ShotgunShoot": { "rva": "0x108B174" },
+        "Refill": { "rva": "0x108E144" },
+        "RefillAll": { "rva": "0x108E404" },
+        "Empty": { "rva": "0x108E504" },
+        "EmptyAll": { "rva": "0x108E564" }
+      }
+    },
+    "PlayerDriveVehicle": {
+      "typedefIndex": 1644,
+      "baseClass": "Mirror.NetworkBehaviour",
+      "methods": {
+        "CmdForceEnterVehicle": { "rva": "0x1013FAC", "attribute": "Command" },
+        "CmdCommandCar": { "rva": "0x10139A8", "attribute": "Command" },
+        "CmdSyncVehicle": { "rva": "0x1011E58", "attribute": "Command" },
+        "CmdCheckLights": { "rva": "0x1012178", "attribute": "Command" },
+        "CmdCheckLock": { "rva": "0x1016308", "attribute": "Command" },
+        "CmdRepairVehicle": { "rva": "0x1016FE0", "attribute": "Command(requiresAuthority=False)" },
+        "CmdGhostVehicles": { "rva": "0x10172D8", "attribute": "Command(requiresAuthority=False)" },
+        "CmdSetColor": { "rva": "0x1016C54", "attribute": "Command(requiresAuthority=False)" }
+      }
+    },
+    "SpawnVehicle": {
+      "typedefIndex": 1953,
+      "baseClass": "Mirror.NetworkBehaviour",
+      "methods": {
+        "CmdSpawnVehicle": { "rva": "0xFE2274", "attribute": "Command(requiresAuthority=False)" },
+        "RpcVehicleInfo": { "rva": "0xFDE3B4", "attribute": "ClientRpc" }
+      }
+    },
+    "VehicleControl": {
+      "typedefIndex": 1957,
+      "baseClass": "Mirror.NetworkBehaviour",
+      "fields": {
+        "Damage": { "offset": "dynamic", "type": "float" },
+        "Fuel": { "offset": "dynamic", "type": "float" },
+        "Locked": { "offset": "dynamic", "type": "bool" },
+        "Horn": { "offset": "dynamic", "type": "bool" },
+        "Headlights": { "offset": "dynamic", "type": "bool" },
+        "AlwaysDrift": { "offset": "dynamic", "type": "bool" },
+        "ArcadeDriving": { "offset": "dynamic", "type": "bool" }
+      }
+    },
+    "VehicleDamage": {
+      "typedefIndex": 1961,
+      "baseClass": "Mirror.NetworkBehaviour",
+      "methods": {
+        "CmdHitPlayer": { "rva": "0xFF0F20", "attribute": "Command(requiresAuthority=False)" },
+        "RpcDamagePoint": { "rva": "0xFECFD4", "attribute": "ClientRpc" },
+        "RpcRepairVehicle": { "rva": "0xFEDE54", "attribute": "ClientRpc" },
+        "RpcDetachBodyPart": { "rva": "0xFEE058", "attribute": "ClientRpc" }
+      }
+    },
+    "ServerGameManager": {
+      "typedefIndex": 1854,
+      "methods": {
+        "CmdStartRound": { "rva": "0xF8709C", "attribute": "Command(requiresAuthority=False)" },
+        "CmdStopRound": { "rva": "0xF87138", "attribute": "Command(requiresAuthority=False)" },
+        "CmdSyncTime": { "rva": "0xF84588", "attribute": "Command(requiresAuthority=False)" },
+        "CmdSetPlayers": { "rva": "0xF87A24", "attribute": "Command(requiresAuthority=False)" },
+        "CmdSyncDayCycle": { "rva": "0xF847E8", "attribute": "Command(requiresAuthority=False)" }
+      }
+    },
+    "ZombieManager": {
+      "typedefIndex": 1881,
+      "methods": {
+        "CmdSpawnPlayers": { "rva": "0xFA4E84", "attribute": "Command(requiresAuthority=False)" },
+        "CmdKillAllZombies": { "rva": "0xFA4D34", "attribute": "Command(requiresAuthority=False)" }
+      }
+    },
+    "LACEditor": {
+      "typedefIndex": 1762,
+      "baseClass": "Mirror.NetworkBehaviour",
+      "methods": {
+        "ToggleInvincible": { "rva": "0x10CDB38" },
+        "ToggleNavmeshAI": { "rva": "0x10CDA64" },
+        "ToggleEditing": { "rva": "0x10CDD5C" },
+        "SaveFiles": { "rva": "0x10C0E20" },
+        "LoadFile": { "rva": "0x10C4780" }
+      }
+    },
+    "NetworkedGlobalVariables": {
+      "typedefIndex": 1763,
+      "baseClass": "Mirror.NetworkBehaviour",
+      "fields": {
+        "global_float_a": { "offset": "0x68", "type": "float" },
+        "global_float_b": { "offset": "0x6C", "type": "float" },
+        "global_string_a": { "offset": "0x98", "type": "string" }
+      },
+      "methods": {
+        "RpcUpdateVariables": { "rva": "0xF45A34", "attribute": "ClientRpc" },
+        "RpcSetVariable": { "rva": "0xF45B54", "attribute": "ClientRpc" }
+      }
+    },
+    "PlayerKillFeed": {
+      "typedefIndex": 1663,
+      "baseClass": "Mirror.NetworkBehaviour",
+      "methods": {
+        "CmdBroadCastKill": { "rva": "0x1068664", "attribute": "Command(requiresAuthority=False)" }
+      }
+    },
+    "VoiceChat": {
+      "typedefIndex": 1973,
+      "baseClass": "Mirror.NetworkBehaviour",
+      "methods": {
+        "CmdSendVoice": { "rva": "0xFF9C74", "attribute": "Command" }
+      }
+    },
+    "RadioPlayerVehicle": {
+      "typedefIndex": 1888,
+      "baseClass": "Mirror.NetworkBehaviour",
+      "methods": {
+        "CmdSyncRadio": { "rva": "0xFA95B4", "attribute": "Command(requiresAuthority=False)" }
+      }
+    },
+    "RolePlayManager": {
+      "typedefIndex": 1913,
+      "baseClass": "UnityEngine.MonoBehaviour",
+      "fields": {
+        "playersData": { "offset": "0x68", "type": "List<PlayerData>" }
+      },
+      "methods": {
+        "SavePlayerData": { "rva": "0xFAEF8C" },
+        "LoadData": { "rva": "0xFADE9C" }
+      }
+    }
+  },
+  "vehicleModels": {
+    "Marock": 0,
+    "Zupra": 1,
+    "Elissan": 2,
+    "King": 3,
+    "Pride": 4,
+    "JTM": 5,
+    "Hummingbird": 6,
+    "Chevelle": 7,
+    "Sprinter": 8
+  }
+}
