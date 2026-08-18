@@ -5,8 +5,8 @@
 .field private menuOpen:Z
 .field private toggleButton:Landroid/widget/TextView;
 .field private menuPanel:Landroid/widget/LinearLayout;
-.field private layoutParams:Landroid/view/WindowManager$LayoutParams;
-.field private windowManager:Landroid/view/WindowManager;
+.field public layoutParams:Landroid/view/WindowManager$LayoutParams;
+.field public windowManager:Landroid/view/WindowManager;
 
 # Hack states
 .field private godMode:Z

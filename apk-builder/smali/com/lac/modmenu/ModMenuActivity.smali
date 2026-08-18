@@ -17,7 +17,7 @@
 
 # virtual methods
 .method protected onCreate(Landroid/os/Bundle;)V
-    .locals 2
+    .locals 4
 
     invoke-super {p0, p1}, Lcom/unity3d/player/UnityPlayerActivity;->onCreate(Landroid/os/Bundle;)V
 
@@ -25,14 +25,20 @@
     invoke-direct {v0, p0}, Lcom/lac/modmenu/ModMenuOverlay;-><init>(Landroid/content/Context;)V
     iput-object v0, p0, Lcom/lac/modmenu/ModMenuActivity;->modMenuOverlay:Lcom/lac/modmenu/ModMenuOverlay;
 
-    const-string v1, "MOD"
-    invoke-virtual {v0, v1}, Lcom/lac/modmenu/ModMenuOverlay;->setText(Ljava/lang/CharSequence;)V
-
-    iget-object v0, p0, Lcom/lac/modmenu/ModMenuActivity;->modMenuOverlay:Lcom/lac/modmenu/ModMenuOverlay;
-
     new-instance v1, Lcom/lac/modmenu/ModMenuActivity$1;
     invoke-direct {v1, p0}, Lcom/lac/modmenu/ModMenuActivity$1;-><init>(Lcom/lac/modmenu/ModMenuActivity;)V
     invoke-virtual {v0, v1}, Lcom/lac/modmenu/ModMenuOverlay;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+
+    invoke-virtual {v0}, Lcom/lac/modmenu/ModMenuOverlay;->toggleMenu()V
+
+    const-string v1, "window"
+    invoke-virtual {p0, v1}, Lcom/lac/modmenu/ModMenuActivity;->getSystemService(Ljava/lang/String;)Ljava/lang/Object;
+    move-result-object v1
+    check-cast v1, Landroid/view/WindowManager;
+
+    iget-object v2, p0, Lcom/lac/modmenu/ModMenuActivity;->modMenuOverlay:Lcom/lac/modmenu/ModMenuOverlay;
+    iget-object v3, v2, Lcom/lac/modmenu/ModMenuOverlay;->layoutParams:Landroid/view/WindowManager$LayoutParams;
+    invoke-interface {v1, v2, v3}, Landroid/view/WindowManager;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
     return-void
 .end method
