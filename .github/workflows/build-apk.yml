@@ -31,10 +31,32 @@ jobs:
           chmod +x /usr/local/bin/apktool
           apktool --version
 
-      - name: Install tools
+      - name: Setup Android SDK tools
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq zipalign unzip
+          # Android SDK is pre-installed on GitHub runners
+          echo "ANDROID_HOME=${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          ls ${ANDROID_HOME}/build-tools/ 2>/dev/null || echo "No build-tools found"
+          
+          # Find the latest build-tools version
+          BUILD_TOOLS=$(ls ${ANDROID_HOME}/build-tools/ 2>/dev/null | sort -V | tail -1)
+          if [ -n "$BUILD_TOOLS" ]; then
+            echo "Found build-tools: $BUILD_TOOLS"
+            echo "${ANDROID_HOME}/build-tools/$BUILD_TOOLS" >> $GITHUB_PATH
+          else
+            echo "Installing build-tools via sdkmanager..."
+            yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager "build-tools;34.0.0" || \
+            yes | ${ANDROID_HOME}/tools/bin/sdkmanager "build-tools;34.0.0" || \
+            sudo apt-get install -y -qq apksigner zipalign 2>/dev/null || true
+            
+            BUILD_TOOLS=$(ls ${ANDROID_HOME}/build-tools/ 2>/dev/null | sort -V | tail -1)
+            if [ -n "$BUILD_TOOLS" ]; then
+              echo "${ANDROID_HOME}/build-tools/$BUILD_TOOLS" >> $GITHUB_PATH
+            fi
+          fi
+          
+          # Ensure zipalign and apksigner are available
+          which zipalign && echo "zipalign: $(which zipalign)" || echo "zipalign not found"
+          which apksigner && echo "apksigner: $(which apksigner)" || echo "apksigner not found"
 
       - name: Download XAPK from Google Drive
         run: |
