@@ -1,8 +1,8 @@
 # LAC Security Test Framework
 
-[![CI](https://github.com/your-username/LAC-SecurityTest/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/LAC-SecurityTest/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/your-username/LAC-SecurityTest/actions/workflows/codeql.yml/badge.svg)](https://github.com/your-username/LAC-SecurityTest/actions/workflows/codeql.yml)
-[![Release](https://github.com/your-username/LAC-SecurityTest/actions/workflows/release.yml/badge.svg)](https://github.com/your-username/LAC-SecurityTest/actions/workflows/release.yml)
+[![CI](https://github.com/IsraelDXPP/LAC-SecurityTest/actions/workflows/ci.yml/badge.svg)](https://github.com/IsraelDXPP/LAC-SecurityTest/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/IsraelDXPP/LAC-SecurityTest/actions/workflows/codeql.yml/badge.svg)](https://github.com/IsraelDXPP/LAC-SecurityTest/actions/workflows/codeql.yml)
+[![Release](https://github.com/IsraelDXPP/LAC-SecurityTest/actions/workflows/release.yml/badge.svg)](https://github.com/IsraelDXPP/LAC-SecurityTest/actions/workflows/release.yml)
 
 ## Overview
 
@@ -21,7 +21,7 @@ Frida-based security testing framework for Los Angeles Crimes 1.9.6. Identifies 
 
 ```bash
 # Clone repository
-git clone https://github.com/your-username/LAC-SecurityTest.git
+git clone https://github.com/IsraelDXPP/LAC-SecurityTest.git
 cd LAC-SecurityTest
 
 # Install dependencies
