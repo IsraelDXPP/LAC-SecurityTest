@@ -366,7 +366,7 @@
     goto :goto_0
 
     :cond_0
-    invoke-direct {p0}, Lcom/lac/modmenu/ModMenuOverlay;->showMenu()V
+    invoke-virtual {p0}, Lcom/lac/modmenu/ModMenuOverlay;->showMenu()V
 
     const/4 v1, 0x1
     iput-boolean v1, p0, Lcom/lac/modmenu/ModMenuOverlay;->menuOpen:Z
