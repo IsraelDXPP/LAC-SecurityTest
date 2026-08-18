@@ -6,6 +6,14 @@ on:
   pull_request:
     branches: [main, master]
   workflow_dispatch:
+    inputs:
+      apk_url:
+        description: 'URL of base APK zip (leave empty to use cached)'
+        required: false
+        type: string
+
+env:
+  APK_BASE_URL: ${{ github.event.inputs.apk_url || '' }}
 
 jobs:
   build:
@@ -14,6 +22,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          lfs: true
 
       - name: Setup Java JDK 17
         uses: actions/setup-java@v4
@@ -23,35 +33,92 @@ jobs:
 
       - name: Install apktool
         run: |
-          wget -q https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool -O /usr/local/bin/apktool
-          wget -q https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.9.3.jar -O /usr/local/bin/apktool.jar
+          curl -sL https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool -o /usr/local/bin/apktool
+          curl -sL https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.11.1.jar -o /usr/local/bin/apktool.jar
           chmod +x /usr/local/bin/apktool
 
-      - name: Make build script executable
-        run: chmod +x apk-builder/build-apk.sh
-
-      - name: Build modded APK
-        working-directory: apk-builder
+      - name: Install Android build tools
         run: |
-          # Create output directory
-          mkdir -p output
+          sudo apt-get update
+          sudo apt-get install -y zipalign
+
+      - name: Check for base APK
+        id: check_apk
+        run: |
+          if [ -d "LAC_apktool" ]; then
+            echo "found=true" >> $GITHUB_OUTPUT
+            echo "Base APK directory found in repo"
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+            echo "Base APK directory not found"
+          fi
+
+      - name: Download base APK
+        if: steps.check_apk.outputs.found == 'false'
+        run: |
+          if [ -n "$APK_BASE_URL" ]; then
+            echo "Downloading base APK from URL..."
+            curl -sL "$APK_BASE_URL" -o base_apk.zip
+            unzip -q base_apk.zip -d LAC_apktool
+          else
+            echo "No APK URL provided and no base APK in repo"
+            echo "Please either:"
+            echo "1. Add LAC_apktool/ directory to repo"
+            echo "2. Provide APK URL in workflow_dispatch"
+            exit 1
+          fi
+
+      - name: Validate APK structure
+        run: |
+          if [ ! -f "LAC_apktool/AndroidManifest.xml" ]; then
+            echo "Error: AndroidManifest.xml not found"
+            exit 1
+          fi
+          if [ ! -d "LAC_apktool/smali_classes9" ]; then
+            echo "Error: smali_classes9 not found"
+            exit 1
+          fi
+          echo "APK structure validated"
+
+      - name: Inject mod menu smali
+        run: |
+          # Create modmenu directory
+          mkdir -p LAC_apktool/smali_classes9/com/lac/modmenu/
           
-          # Copy smali files to APK
-          cp -r smali/com/lac/modmenu/* ../../LAC_apktool/smali_classes9/com/lac/modmenu/ 2>/dev/null || \
-          mkdir -p ../../LAC_apktool/smali_classes9/com/lac/modmenu/ && \
-          cp -r smali/com/lac/modmenu/* ../../LAC_apktool/smali_classes9/com/lac/modmenu/
+          # Copy smali files
+          cp -r apk-builder/smali/com/lac/modmenu/* LAC_apktool/smali_classes9/com/lac/modmenu/
           
-          # Modify AndroidManifest.xml
-          sed -i 's/com.unity3d.player.UnityPlayerActivity/com.lac.modmenu.ModMenuActivity/g' ../../LAC_apktool/AndroidManifest.xml
+          echo "Smali files injected:"
+          ls -la LAC_apktool/smali_classes9/com/lac/modmenu/
+
+      - name: Modify AndroidManifest.xml
+        run: |
+          # Replace UnityPlayerActivity with ModMenuActivity
+          sed -i 's/com.unity3d.player.UnityPlayerActivity/com.lac.modmenu.ModMenuActivity/g' LAC_apktool/AndroidManifest.xml
           
-          # Add overlay permission
-          sed -i 's/<\/manifest>/    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"\/>\n<\/manifest>/g' ../../LAC_apktool/AndroidManifest.xml
+          # Add overlay permission before </manifest>
+          sed -i '/<\/manifest>/i\    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>' LAC_apktool/AndroidManifest.xml
           
-          # Build with apktool
-          apktool b ../../LAC_apktool -o output/LAC_ModMenu.apk
+          echo "AndroidManifest.xml modified"
+          grep -n "ModMenuActivity\|SYSTEM_ALERT" LAC_apktool/AndroidManifest.xml || true
+
+      - name: Build APK with apktool
+        run: |
+          mkdir -p apk-builder/output
+          apktool b LAC_apktool -o apk-builder/output/LAC_ModMenu.apk --force-all
+
+      - name: Verify APK build
+        run: |
+          if [ ! -f "apk-builder/output/LAC_ModMenu.apk" ]; then
+            echo "Error: APK build failed"
+            exit 1
+          fi
+          ls -lh apk-builder/output/LAC_ModMenu.apk
+          echo "APK built successfully"
 
       - name: Generate signing key
         run: |
+          mkdir -p apk-builder/keystore
           keytool -genkey -v \
             -keystore apk-builder/keystore/release.keystore \
             -alias lac-modmenu \
@@ -62,23 +129,30 @@ jobs:
             -keypass password \
             -dname "CN=LAC Mod Menu, OU=Security Test, O=LAC, L=Unknown, ST=Unknown, C=US"
 
+      - name: Align APK
+        run: |
+          zipalign -f 4 apk-builder/output/LAC_ModMenu.apk apk-builder/output/LAC_ModMenu_Aligned.apk
+          echo "APK aligned"
+
       - name: Sign APK
         run: |
-          # Align APK
-          zipalign -f 4 apk-builder/output/LAC_ModMenu.apk apk-builder/output/LAC_ModMenu_Aligned.apk
-          
-          # Sign APK
           apksigner sign \
             --ks apk-builder/keystore/release.keystore \
             --ks-pass pass:password \
             --key-pass pass:password \
             --out apk-builder/output/LAC_ModMenu_Signed.apk \
             apk-builder/output/LAC_ModMenu_Aligned.apk
+          echo "APK signed"
 
-      - name: Upload APK artifact
+      - name: Verify signature
+        run: |
+          apksigner verify --verbose apk-builder/output/LAC_ModMenu_Signed.apk
+          echo "Signature verified"
+
+      - name: Upload signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: LAC-ModMenu-APK
+          name: LAC-ModMenu-Signed
           path: apk-builder/output/LAC_ModMenu_Signed.apk
           retention-days: 30
 
@@ -89,23 +163,65 @@ jobs:
           path: apk-builder/output/LAC_ModMenu.apk
           retention-days: 30
 
+      - name: Summary
+        run: |
+          echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| File | Size |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|------|" >> $GITHUB_STEP_SUMMARY
+          echo "| LAC_ModMenu_Signed.apk | $(du -h apk-builder/output/LAC_ModMenu_Signed.apk | cut -f1) |" >> $GITHUB_STEP_SUMMARY
+          echo "| LAC_ModMenu.apk (unsigned) | $(du -h apk-builder/output/LAC_ModMenu.apk | cut -f1) |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Installation" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "adb install apk-builder/output/LAC_ModMenu_Signed.apk" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
   release:
     needs: build
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
 
     steps:
-      - name: Download APK artifact
+      - name: Download signed APK
         uses: actions/download-artifact@v4
         with:
-          name: LAC-ModMenu-APK
+          name: LAC-ModMenu-Signed
+
+      - name: Get version
+        id: version
+        run: |
+          VERSION=$(date +%Y%m%d_%H%M%S)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
+          name: "LAC Mod Menu v${{ steps.version.outputs.version }}"
+          tag_name: "v${{ steps.version.outputs.version }}"
           files: LAC_ModMenu_Signed.apk
           generate_release_notes: true
-          draft: false
-          prerelease: false
+          body: |
+            ## LAC Mod Menu Build
+            
+            **Build Date**: ${{ steps.version.outputs.version }}
+            
+            ### Installation
+            ```bash
+            adb install LAC_ModMenu_Signed.apk
+            ```
+            
+            ### Features
+            - God Mode
+            - Infinite Health
+            - Unlimited Ammo
+            - Speed Hack
+            - Super Jump
+            - No Recoil
+            - One Hit Kill
+            - Vehicle God Mode
+            - Unlimited Fuel
+            - View All Players
+            - Infinite Coin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
