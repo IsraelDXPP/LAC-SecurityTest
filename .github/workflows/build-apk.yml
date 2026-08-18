@@ -44,7 +44,7 @@ jobs:
           # Use gdown for reliable Google Drive downloads
           pip install gdown
           
-          gdown "https://drive.google.com/uc?id=${FILE_ID}" -O LAC.xapk --fuzzy
+          gdown "https://drive.google.com/uc?id=${FILE_ID}" -O LAC.xapk
           
           if [ ! -f "LAC.xapk" ] || [ ! -s "LAC.xapk" ]; then
             echo "gdown failed, trying alternative method..."
