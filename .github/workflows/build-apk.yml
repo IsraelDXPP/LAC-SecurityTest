@@ -41,19 +41,33 @@ jobs:
           echo "Downloading LAC 1.9.6 XAPK from Google Drive..."
           FILE_ID="${{ env.GOOGLE_DRIVE_ID }}"
           
-          # Get confirm token for large files
-          CONFIRM=$(curl -sc /tmp/gdrive_cookie "https://drive.google.com/uc?export=download&id=${FILE_ID}" | grep -oP 'confirm=([^&;]+)' | head -1)
+          # Use gdown for reliable Google Drive downloads
+          pip install gdown
           
-          if [ -n "$CONFIRM" ]; then
-            echo "Large file detected, using confirm token..."
-            curl -sL "https://drive.google.com/uc?export=download&${CONFIRM}&id=${FILE_ID}" -o LAC.xapk
-          else
-            echo "Direct download..."
-            curl -sL "https://drive.google.com/uc?export=download&id=${FILE_ID}" -o LAC.xapk
+          gdown "https://drive.google.com/uc?id=${FILE_ID}" -O LAC.xapk --fuzzy
+          
+          if [ ! -f "LAC.xapk" ] || [ ! -s "LAC.xapk" ]; then
+            echo "gdown failed, trying alternative method..."
+            # Alternative: use curl with cookie handling
+            curl -c /tmp/cookies.txt -sL "https://drive.google.com/uc?export=download&id=${FILE_ID}" > /tmp/confirm.html
+            CONFIRM=$(grep -oP 'confirm=([^&"]+)' /tmp/confirm.html | head -1 | cut -d= -f2)
+            if [ -n "$CONFIRM" ]; then
+              curl -b /tmp/cookies.txt -sL "https://drive.google.com/uc?export=download&confirm=${CONFIRM}&id=${FILE_ID}" -o LAC.xapk
+            else
+              curl -b /tmp/cookies.txt -sL "https://drive.google.com/uc?export=download&id=${FILE_ID}" -o LAC.xapk
+            fi
           fi
           
+          echo "Downloaded file:"
           ls -lh LAC.xapk
-          echo "Download complete"
+          file LAC.xapk
+          
+          # Verify it's a valid file
+          if file LAC.xapk | grep -q "HTML"; then
+            echo "ERROR: Got HTML instead of APK file"
+            head -c 200 LAC.xapk
+            exit 1
+          fi
 
       - name: Extract XAPK
         run: |
