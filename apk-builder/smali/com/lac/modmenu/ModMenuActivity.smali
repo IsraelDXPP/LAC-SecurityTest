@@ -29,7 +29,8 @@
     invoke-direct {v1, p0}, Lcom/lac/modmenu/ModMenuActivity$1;-><init>(Lcom/lac/modmenu/ModMenuActivity;)V
     invoke-virtual {v0, v1}, Lcom/lac/modmenu/ModMenuOverlay;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
-    invoke-virtual {v0}, Lcom/lac/modmenu/ModMenuOverlay;->toggleMenu()V
+    iget-object v2, v0, Lcom/lac/modmenu/ModMenuOverlay;->toggleButton:Landroid/widget/TextView;
+    invoke-virtual {v0, v2}, Lcom/lac/modmenu/ModMenuOverlay;->addView(Landroid/view/View;)V
 
     const-string v1, "window"
     invoke-virtual {p0, v1}, Lcom/lac/modmenu/ModMenuActivity;->getSystemService(Ljava/lang/String;)Ljava/lang/Object;
