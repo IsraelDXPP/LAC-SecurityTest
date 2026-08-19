@@ -96,7 +96,7 @@
 .end method
 
 .method private createToggleButton(Landroid/content/Context;)V
-    .locals 4
+    .locals 5
 
     new-instance v0, Landroid/widget/TextView;
     invoke-direct {v0, p1}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
@@ -105,21 +105,32 @@
     const-string v1, "MOD"
     invoke-virtual {v0, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    iget-object v0, p0, Lcom/lac/modmenu/ModMenuOverlay;->toggleButton:Landroid/widget/TextView;
+    new-instance v0, Landroid/graphics/drawable/GradientDrawable;
+    invoke-direct {v0}, Landroid/graphics/drawable/GradientDrawable;-><init>()V
+
+    const/high16 v1, 0x42c80000    # 100.0f
+    invoke-virtual {v0, v1}, Landroid/graphics/drawable/GradientDrawable;->setCornerRadius(F)V
+
     const/high16 v1, -0x1000000
-    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setBackgroundColor(I)V
+    invoke-virtual {v0, v1}, Landroid/graphics/drawable/GradientDrawable;->setColor(I)V
+
+    iget-object v1, p0, Lcom/lac/modmenu/ModMenuOverlay;->toggleButton:Landroid/widget/TextView;
+    invoke-virtual {v1, v0}, Landroid/widget/TextView;->setBackground(Landroid/graphics/drawable/Drawable;)V
 
     iget-object v0, p0, Lcom/lac/modmenu/ModMenuOverlay;->toggleButton:Landroid/widget/TextView;
     const/4 v1, -0x1
     invoke-virtual {v0, v1}, Landroid/widget/TextView;->setTextColor(I)V
 
     iget-object v0, p0, Lcom/lac/modmenu/ModMenuOverlay;->toggleButton:Landroid/widget/TextView;
-    const/high16 v1, 0x41800000    # 16.0f
+    const/high16 v1, 0x41400000    # 12.0f
     invoke-virtual {v0, v1}, Landroid/widget/TextView;->setTextSize(F)V
 
     iget-object v0, p0, Lcom/lac/modmenu/ModMenuOverlay;->toggleButton:Landroid/widget/TextView;
     const/16 v1, 0x11
     invoke-virtual {v0, v1}, Landroid/widget/TextView;->setGravity(I)V
+
+    const/16 v0, 0x3c
+    iput v0, p0, Lcom/lac/modmenu/ModMenuOverlay;->MENU_BUTTON_SIZE:I
 
     iget-object v0, p0, Lcom/lac/modmenu/ModMenuOverlay;->toggleButton:Landroid/widget/TextView;
     new-instance v1, Lcom/lac/modmenu/ModMenuOverlay$1;

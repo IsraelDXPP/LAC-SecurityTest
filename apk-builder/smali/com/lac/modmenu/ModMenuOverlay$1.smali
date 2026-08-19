@@ -1,5 +1,6 @@
 .class public Lcom/lac/modmenu/ModMenuOverlay$1;
 .super Ljava/lang/Object;
+.implements Landroid/view/View$OnTouchListener;
 
 # instance fields
 .field final synthetic this$0:Lcom/lac/modmenu/ModMenuOverlay;
