@@ -73,7 +73,7 @@
     invoke-direct {v1}, Landroid/view/WindowManager$LayoutParams;-><init>()V
     iput-object v1, p0, Lcom/lac/modmenu/ModMenuOverlay;->layoutParams:Landroid/view/WindowManager$LayoutParams;
 
-    const/16 v2, 0x7d6
+    const/16 v2, 0x7f6
     iput v2, v1, Landroid/view/WindowManager$LayoutParams;->type:I
 
     iget-object v1, p0, Lcom/lac/modmenu/ModMenuOverlay;->layoutParams:Landroid/view/WindowManager$LayoutParams;

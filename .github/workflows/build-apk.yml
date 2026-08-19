@@ -228,8 +228,15 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Install" >> $GITHUB_STEP_SUMMARY
           echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "# Install APK" >> $GITHUB_STEP_SUMMARY
           echo "adb install LAC_ModMenu_Signed.apk" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "# Push OBB (required!)" >> $GITHUB_STEP_SUMMARY
+          echo "adb shell mkdir -p /sdcard/Android/obb/com.MA.LAC" >> $GITHUB_STEP_SUMMARY
           echo "adb push main.59.com.MA.LAC.obb /sdcard/Android/obb/com.MA.LAC/" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "# Launch" >> $GITHUB_STEP_SUMMARY
+          echo "adb shell am start -n com.MA.LAC/com.lac.modmenu.ModMenuActivity" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
   release:
