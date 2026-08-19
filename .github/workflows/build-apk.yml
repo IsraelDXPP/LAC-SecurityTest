@@ -110,6 +110,17 @@ jobs:
           
           echo "Base APK: $BASE_APK"
           
+          # Save OBB if it exists
+          OBB_DIR="LAC_extracted/Android/obb/com.MA.LAC"
+          if [ -d "$OBB_DIR" ]; then
+            echo "OBB found:"
+            ls -lh "$OBB_DIR/"
+            mkdir -p output/obb
+            cp "$OBB_DIR"/*.obb output/obb/ 2>/dev/null || true
+          else
+            echo "No OBB found"
+          fi
+          
           # Decompile with apktool
           echo "Decompiling APK with apktool..."
           apktool d "$BASE_APK" -o LAC_apktool -f
@@ -147,7 +158,7 @@ jobs:
         run: |
           echo "Building modded APK..."
           mkdir -p output
-          apktool b LAC_apktool -o output/LAC_ModMenu.apk --force-all
+          apktool b LAC_apktool -o output/LAC_ModMenu.apk -f
           
           if [ ! -f "output/LAC_ModMenu.apk" ]; then
             echo "ERROR: APK build failed"
@@ -196,6 +207,14 @@ jobs:
           path: output/LAC_ModMenu_Signed.apk
           retention-days: 30
 
+      - name: Upload OBB
+        if: hashFiles('output/obb/*.obb') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: LAC-OBB
+          path: output/obb/*.obb
+          retention-days: 30
+
       - name: Summary
         run: |
           echo "## Build Complete" >> $GITHUB_STEP_SUMMARY
@@ -203,10 +222,14 @@ jobs:
           echo "| File | Size |" >> $GITHUB_STEP_SUMMARY
           echo "|------|------|" >> $GITHUB_STEP_SUMMARY
           echo "| LAC_ModMenu_Signed.apk | $(du -h output/LAC_ModMenu_Signed.apk | cut -f1) |" >> $GITHUB_STEP_SUMMARY
+          if ls output/obb/*.obb 1>/dev/null 2>&1; then
+            echo "| OBB | $(du -h output/obb/*.obb | cut -f1) |" >> $GITHUB_STEP_SUMMARY
+          fi
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Install" >> $GITHUB_STEP_SUMMARY
           echo '```bash' >> $GITHUB_STEP_SUMMARY
           echo "adb install LAC_ModMenu_Signed.apk" >> $GITHUB_STEP_SUMMARY
+          echo "adb push main.59.com.MA.LAC.obb /sdcard/Android/obb/com.MA.LAC/" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
   release:
@@ -220,6 +243,13 @@ jobs:
         with:
           name: LAC-ModMenu-Signed
 
+      - name: Download OBB
+        uses: actions/download-artifact@v4
+        with:
+          name: LAC-OBB
+          path: obb
+        continue-on-error: true
+
       - name: Get version
         id: version
         run: echo "version=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_OUTPUT
@@ -229,7 +259,9 @@ jobs:
         with:
           name: "LAC Mod Menu v${{ steps.version.outputs.version }}"
           tag_name: "v${{ steps.version.outputs.version }}"
-          files: LAC_ModMenu_Signed.apk
+          files: |
+            LAC_ModMenu_Signed.apk
+            obb/*.obb
           generate_release_notes: true
           body: |
             ## LAC Mod Menu
@@ -239,6 +271,7 @@ jobs:
             ### Install
             ```bash
             adb install LAC_ModMenu_Signed.apk
+            adb push main.59.com.MA.LAC.obb /sdcard/Android/obb/com.MA.LAC/
             ```
             
             ### Hacks
