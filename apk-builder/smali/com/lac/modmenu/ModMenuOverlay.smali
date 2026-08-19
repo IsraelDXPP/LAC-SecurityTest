@@ -3,7 +3,7 @@
 
 # instance fields
 .field private menuOpen:Z
-.field private toggleButton:Landroid/widget/TextView;
+.field public toggleButton:Landroid/widget/TextView;
 .field private menuPanel:Landroid/widget/LinearLayout;
 .field public layoutParams:Landroid/view/WindowManager$LayoutParams;
 .field public windowManager:Landroid/view/WindowManager;
